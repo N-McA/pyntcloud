@@ -47,7 +47,7 @@ def plot_PyntCloud(cloud, point_size=0.3, output_name="pyntcloud_plot",
     # Make line_color canonical.
     # It always passed to the js as an array of strings
     # of the same length as lines.
-    if not hasattr(line_color, "__len__"):
+    if isinstance(line_color, str) and not hasattr(line_color, "__len__"):
         line_color = [line_color]
     line_color_list = []
     for c in line_color:
