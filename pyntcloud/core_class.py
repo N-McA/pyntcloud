@@ -30,7 +30,7 @@ class PyntCloud(object):
         points: pd.DataFrame
             DataFrame of N rows by M columns.
             Each row represents one point of the point cloud.
-            Each column represents one scalar field associated to it's corresponding point.
+            Each column represents one scalar field associated to its corresponding point.
 
         mesh: pd.DataFrame or None, optional
             Default: None
@@ -108,19 +108,19 @@ class PyntCloud(object):
 
     @classmethod
     def from_file(cls, filename, **kwargs):
-        """Extract data from file and constructs a PyntCloud with it.
+        """Extract data from file and construct a PyntCloud with it.
 
         Parameters
         ----------
         filename: str
-            Path to the file from wich the data will be readed
+            Path to the file from which the data will be read
 
         kwargs: only usable in some formats
 
         Returns
         -------
         PyntCloud: object
-            PyntCloud's instance, containing all valid elements in the file.
+            PyntCloud instance, containing all valid elements in the file.
         """
         ext = filename.split(".")[-1].upper()
         if ext not in FROM:
@@ -130,17 +130,17 @@ class PyntCloud(object):
             return cls(**FROM[ext](filename, **kwargs))
 
     def to_file(self, filename, also_save=None, **kwargs):
-        """Save PyntCloud's data to file.
+        """Save PyntCloud data to file.
 
         Parameters
         ----------
         filename: str
-            Path to the file from wich the data will be readed
+            Path to the file from which the data will be read
 
         also_save: list of str, optional
             Default: None
             Names of the attributes that will be extracted from the PyntCloud
-            to be saved in adition to points. Usually also_save=["mesh"]
+            to be saved in addition to points. Usually also_save=["mesh"]
 
         kwargs: only usable in some formats
         """
@@ -163,20 +163,20 @@ class PyntCloud(object):
         Parameters
         ----------
         name: str
-            One of the avaliable names. See bellow.
+            One of the available names. See below.
         kwargs
-            Vary for each name. See bellow.
+            Vary for each name. See below.
 
         Returns
         -------
         sf_added: list of str
             The name of each of the columns (scalar fields) added.
-            Usefull for chaining operations that require string names.
+            Useful for chaining operations that require string names.
 
         Notes
         -----
 
-        Avaliable scalar fields are:
+        Available scalar fields are:
 
         **REQUIRE EIGENVALUES**
 
@@ -214,13 +214,13 @@ class PyntCloud(object):
 
         **REQUIRE NORMALS**
 
-            orientation_deg
+            orientation_degrees
 
-            orientation_rad
+            orientation_radians
 
-            inclination_rad
+            inclination_radians
 
-            inclination_deg
+            inclination_degrees
 
         **REQUIRE RGB**
 
@@ -234,8 +234,8 @@ class PyntCloud(object):
         **REQUIRE VOXELGRID**
 
             ARGS
-                voxelgrid: VoxelGrid.id
-                    voxelgrid = self.add_structure("voxelgrid", ...)
+                voxelgrid_id: VoxelGrid.id
+                    voxelgrid_id = self.add_structure("voxelgrid", ...)
 
             voxel_x
 
@@ -285,16 +285,15 @@ class PyntCloud(object):
                     Return polar and azimuthal angles in degrees.
         """
         if name in ALL_SF:
-            SF = ALL_SF[name](self, **kwargs)
-            SF.extract_info()
-            SF.compute()
-            sf_added = SF.get_and_set()
+            scalar_field = ALL_SF[name](pyntcloud=self, **kwargs)
+            scalar_field.extract_info()
+            scalar_field.compute()
+            scalar_fields_added = scalar_field.get_and_set()
 
         else:
             raise ValueError("Unsupported scalar field. Check docstring")
 
-        convert_columns_dtype(self.points, np.float64, np.float32)
-        return sf_added
+        return scalar_fields_added
 
     def add_structure(self, name, **kwargs):
         """Build a structure and add it to the corresponding PyntCloud's attribute.
@@ -302,19 +301,19 @@ class PyntCloud(object):
         Parameters
         ----------
         name: str
-            One of the avaliable names. See bellow.
+            One of the available names. See below.
         kwargs
-            Vary for each name. See bellow.
+            Vary for each name. See below.
 
         Returns
         -------
         structure.id: str
             Identification string associated with the added structure.
-            Usefull for chaining operations that require string names.
+            Useful for chaining operations that require string names.
 
         Notes
         -----
-        Avaliable structures are:
+        Available structures are:
 
         **ONLY REQUIRE XYZ**
 
@@ -327,7 +326,7 @@ class PyntCloud(object):
             voxelgrid
                 x_y_z: list of int, optional
                     Default: [2, 2, 2]
-                    The number of segments in wich each axis will be divided.
+                    The number of segments in which each axis will be divided.
                     x_y_z[0]: x axis
                     x_y_z[1]: y axis
                     x_y_z[2]: z axis
@@ -341,22 +340,22 @@ class PyntCloud(object):
                 bb_cuboid: bool, optional
                     Default: True
                     If True, the bounding box of the point cloud will be adjusted
-                    in order to have all the dimensions of equal lenght.
+                    in order to have all the dimensions of equal length.
 
             octree
                 TODO
 
         """
         if name in ALL_STRUCTURES:
-            STRUCTURE = ALL_STRUCTURES[name](self, **kwargs)
-            STRUCTURE.extract_info()
-            STRUCTURE.compute()
-            added = STRUCTURE.get_and_set()
+            structure = ALL_STRUCTURES[name](self, **kwargs)
+            structure.extract_info()
+            structure.compute()
+            structure_added = structure.get_and_set()
 
         else:
             raise ValueError("Unsupported structure. Check docstring")
 
-        return added
+        return structure_added
 
     def get_filter(self, name, and_apply=False, **kwargs):
         """Compute filter over PyntCloud's points and return it.
@@ -364,14 +363,14 @@ class PyntCloud(object):
         Parameters
         ----------
         name: str
-            One of the avaliable names. See bellow.
+            One of the available names. See below.
 
         and_apply: boolean, optional
             Default: False
             If True, filter will be applied to self.points
 
         kwargs
-            Vary for each name. See bellow.
+            Vary for each name. See below.
 
         Returns
         -------
@@ -383,7 +382,7 @@ class PyntCloud(object):
         Notes
         -----
 
-        Avaliable filters are:
+        Available filters are:
 
         **REQUIRE KDTREE**
 
@@ -402,7 +401,7 @@ class PyntCloud(object):
                 k: int
                     Number of neighbors that will be used to compute the filter.
                 z_max: float
-                    The maximum Z score wich determines if the point is an outlier.
+                    The maximum Z score which determines if the point is an outlier.
 
         **ONLY REQUIRE XYZ**
 
@@ -413,9 +412,9 @@ class PyntCloud(object):
 
         """
         if name in ALL_FILTERS:
-            F = ALL_FILTERS[name](self, **kwargs)
-            F.extract_info()
-            boolean_array = F.compute()
+            pointcloud_filter = ALL_FILTERS[name](pyntcloud=self, **kwargs)
+            pointcloud_filter.extract_info()
+            boolean_array = pointcloud_filter.compute()
 
             if and_apply:
                 self.apply_filter(boolean_array)
@@ -431,8 +430,8 @@ class PyntCloud(object):
         Parameters
         ----------
         name: str
-            One of the avaliable names.
-            See bellow.
+            One of the available names.
+            See below.
 
         as_PyntCloud: bool, optional
             Default: False
@@ -440,7 +439,7 @@ class PyntCloud(object):
 
         kwargs
             Vary for each name.
-            See bellow.
+            See below.
 
         Returns
         -------
@@ -450,11 +449,11 @@ class PyntCloud(object):
         Notes
         -----
 
-        Avaliable sampling methods are:
+        Available sampling methods are:
 
         **REQUIRE MESH**
 
-            mesh_random_sampling
+            mesh_random
                 n: int
                     Number of points to be sampled.
                 rgb: bool, optional
@@ -479,37 +478,37 @@ class PyntCloud(object):
 
         **USE POINTS**
 
-            points_random_sampling
+            points_random
                 n: int
                     Number of points to be sampled.
         """
         if name in ALL_SAMPLERS:
-            S = ALL_SAMPLERS[name](self, **kwargs)
-            S.extract_info()
-            sampled_points = S.compute()
+            sampler = ALL_SAMPLERS[name](pyntcloud=self, **kwargs)
+            sampler.extract_info()
+            sample = sampler.compute()
 
             if as_PyntCloud:
-                return PyntCloud(sampled_points)
+                return PyntCloud(sample)
 
-            return sampled_points
+            return sample
 
         else:
             raise ValueError("Unsupported sampling method. Check docstring")
 
     def get_neighbors(self, k=None, r=None, kdtree=None):
-        """For each point finds the indices that compose it's neighbourhood.
+        """For each point finds the indices that compose its neighborhood.
 
         Parameters
         ----------
         k: int, optional
             Default: None
             For "K-nearest neighbor" search.
-            Number of nearest neighbors that will be used to build the neighbourhood.
+            Number of nearest neighbors that will be used to build the neighborhood.
 
         r: float, optional
             Default: None
             For "Fixed-radius neighbors" search.
-            Radius of the sphere that will be used to build the neighbourhood.
+            Radius of the sphere that will be used to build the neighborhood.
 
         kdtree: str, optional
             Default: None
@@ -569,17 +568,17 @@ class PyntCloud(object):
 
         return v1, v2, v3
 
-    def apply_filter(self, filter):
+    def apply_filter(self, boolean_array):
         """Update self.points removing points where filter is False.
 
         Parameters
         ----------
-        filter: boolean array
-            Must be equal lenght than self.points
+        boolean_array: ndarray, dtype bool
+            len(boolean array) must be equal to len(self.points)
         """
-        self.points = self.points.loc[filter].reset_index(drop=True)
+        self.points = self.points.loc[boolean_array].reset_index(drop=True)
 
-    def split_on(self, sf, and_return=False, save_format="ply", save_path=os.getcwd()):
+    def split_on(self, scalar_field, and_return=False, save_format="ply", save_path=os.getcwd()):
         """Divide the PyntCloud using unique values in given sf.
 
         This function will generate PyntClouds by grouping points using the unique
@@ -587,7 +586,7 @@ class PyntCloud(object):
 
         Parameters
         ----------
-        sf: str
+        scalar_field: str
             Name of the scalar field to be used for splitting.
 
         and_return: boolean, optional
@@ -597,15 +596,15 @@ class PyntCloud(object):
         save_format: str, optional
             Default: "ply"
             Extension used to save the generated PyntClouds.
-            Must be of of the formats present in pyntcloud.io.TO
+            Must be of one of the formats present in pyntcloud.io.TO
 
         save_path: str, optional
             Default: "."
             Path where the PyntClouds will be saved.
         """
-        sf = self.points[sf]
+        scalar_field = self.points[scalar_field]
 
-        splits = {x: PyntCloud(self.points.loc[sf == x]) for x in sf.unique()}
+        splits = {x: PyntCloud(self.points.loc[scalar_field == x]) for x in scalar_field.unique()}
 
         if not os.path.exists(save_path):
             os.makedirs(save_path)
@@ -617,26 +616,23 @@ class PyntCloud(object):
             return splits
 
     def _update_points(self, df):
-        """Utility function. Implicity called when self.points is assigned."""
+        """Utility function. Implicitly called when self.points is assigned."""
         self.mesh = None
         self.structures = StructuresDict()
-        convert_columns_dtype(df, np.float64, np.float32)
         self.__points = df
         self.xyz = self.__points[["x", "y", "z"]].values
         self.centroid = self.xyz.mean(0)
 
     def plot(self,
-             mesh=False,
-             point_size=0.3,
-             opacity=0.9,
-             use_as_color=["red", "green", "blue"],
-             cmap="hsv",
-             output_name="pyntcloud_plot",
-             width=800,
-             height=500,
-             lines=[],
-             line_color="0xFF0000",
-             ):
+        mesh=False,
+        point_size=0.3,
+        opacity=0.9,
+        use_as_color=["red", "green", "blue"],
+        cmap="hsv",
+        output_name="pyntcloud_plot",
+        IFrame_shape=(800, 500),
+        polylines={}
+        ):
         """Visualize PyntCloud in a Jupyter notebook using three.js.
 
         Parameters
@@ -651,7 +647,7 @@ class PyntCloud(object):
 
         use_as_color: str or ["red", "green", "blue"], optional
             Default: ["red", "green", "blue"]
-            Indicates wich scalar fields will be used to colorize the rendered
+            Indicates which scalar fields will be used to colorize the rendered
             point cloud.
 
         cmap: str, optional
@@ -666,30 +662,18 @@ class PyntCloud(object):
                 output_name.ply
                 output_name.json
 
-        width: int, optional
-            Default: 800
-            Adjusts the size of the IFrame plotted in Jupyter notebook.
+        IFrame_shape: tuple of ints, optional
+            Default (800, 500)
+            (Width, Height) of the IFrame rendered in the notebook.
 
-        height: int, optional
-            Default: 500
-            Adjusts the size of the IFrame plotted in Jupyter notebook.
-
-        lines: ndarray | list, optional
-            Expects either a numpy array or a list of lists.
-            It is indexed: line, point on line, xyz,
-            and may be ragged in the second dimension.
-            Thus [[[0, 0, 0], [1, 0, 1], [1, 1, 1]]] is a valid argument containing
-            one line composed  of three points.
-
-        line_color int | string | Iterable<int|string>, optional
-            The hex color of all lines to be drawn, or the hex color of
-            each line to be drawn.
-            Valid values include:
-                "0xFF00FF"
-                0xFF00FF
-                7
-                "0"
-                [0xFF00FF, 0x777777] # Provided len(lines) == 2
+        polylines: dict, optional
+            Default {}.
+            Mapping hexadecimal colors to a list of list(len(3)) representing the points of the polyline.
+            Example:
+            polylines={
+                "0xFFFFFF": [[0, 0, 0], [0, 0, 1]],
+                "0xFF00FF": [[1, 0, 0], [1, 0, 1], [1, 1, 1]]
+            }
 
         Returns
         -------
@@ -730,8 +714,11 @@ class PyntCloud(object):
         if mesh and self.mesh is not None:
             new_PyntCloud.mesh = self.mesh[["v1", "v2", "v3"]]
 
-        return plot_PyntCloud(new_PyntCloud, point_size, output_name=output_name,
-                              point_opacity=opacity,
-                              lines=lines,
-                              line_color=line_color,
-                              )
+        return plot_PyntCloud(
+            new_PyntCloud, 
+            IFrame_shape=IFrame_shape,
+            point_size=point_size, 
+            point_opacity=opacity,
+            output_name=output_name,
+            polylines=polylines
+            )
