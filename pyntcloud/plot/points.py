@@ -52,7 +52,7 @@ def plot_PyntCloud(cloud,
     src = "{}/{}".format(BASE_PATH, "points.html")
     dst = "{}/{}".format(os.getcwd(), "{}.html".format(output_name))
 
-    camera_position = (cloud.xyz.max(0) + abs(cloud.xyz.max(0))).tolist()
+    camera_position = np.zeros(3).tolist()
     look_at = cloud.xyz.mean(0).tolist()
 
     dest_directory = Path(os.getcwd())
@@ -86,5 +86,6 @@ def plot_PyntCloud(cloud,
                         "{}/{}".format(os.getcwd(), "pyntcloud_plot_assets"))
     except FileExistsError:
         pass
-
-    return IFrame("{}.html".format(output_name), width=IFrame_shape[0], height=IFrame_shape[1])
+    target = "http://localhost:7777/{}.html".format(output_name)
+    print(target)
+    return IFrame(target, width=IFrame_shape[0], height=IFrame_shape[1])
