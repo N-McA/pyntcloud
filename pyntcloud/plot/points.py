@@ -39,11 +39,17 @@ def plot_PyntCloud(cloud,
     polylines: dict, optional
         Default {}.
         Mapping hexadecimal colors to a list of list(len(3)) representing the points of the polyline.
+        Or: list of tuples mapping colors to polylines.
         Example:
         polylines={
             "0xFFFFFF": [[0, 0, 0], [0, 0, 1]],
             "0xFF00FF": [[1, 0, 0], [1, 0, 1], [1, 1, 1]]
         }
+        or
+        polylines=[
+            ("0xFFFFFF", [[0, 0, 0], [0, 0, 1]]),
+            ("0xFF00FF", [[1, 0, 0], [1, 0, 1], [1, 1, 1]])
+        ]
     """
     if IFrame is None:
         raise ImportError("IFrame is needed for plotting.")
@@ -58,14 +64,17 @@ def plot_PyntCloud(cloud,
     dest_directory = Path(os.getcwd())
     config_file_path = dest_directory / (output_name + '.config.json')
 
+    if isinstance(polylines, dict):
+        polylines = list(polylines.items())
+
     config_obj = {
         "filename": output_name,
         "camera_position": camera_position,
         "look_at": look_at,
         "point_size": point_size,
         "point_opacity": point_opacity,
-        "polylines_points": list(polylines.values()),
-        "polylines_colors": list(polylines.keys()),
+        "polylines_points": [line for color, line in polylines],
+        "polylines_colors": [color for color, line in polylines],
     }
 
     with config_file_path.open('w') as config_file:
@@ -86,6 +95,6 @@ def plot_PyntCloud(cloud,
                         "{}/{}".format(os.getcwd(), "pyntcloud_plot_assets"))
     except FileExistsError:
         pass
-    target = "http://localhost:7777/{}.html".format(output_name)
+    target = "{}.html".format(output_name)
     print(target)
     return IFrame(target, width=IFrame_shape[0], height=IFrame_shape[1])
